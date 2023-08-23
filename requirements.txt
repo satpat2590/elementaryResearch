@@ -1,0 +1,6 @@
+pandas==2.0.3
+langchain==0.0.270
+polars==0.18.15
+openai==0.27.8
+chromadb==0.4.6
+pymupdf==1.22.5
