@@ -10,6 +10,8 @@ from langchain.llms import OpenAI
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.document_loaders import PyMuPDFLoader
+from langchain.chains import LLMChain
+from langchain.memory import ConversationBufferMemory
 from dotenv import load_dotenv
 import os 
 
@@ -18,7 +20,7 @@ import os
 #OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 # Initialize our LLM 
-llm = OpenAI()
+llm = OpenAI(model_name="gpt-4")
 chat_model = ChatOpenAI(model_name="gpt-4")
 
 # Load documents
@@ -36,8 +38,31 @@ prompt = PromptTemplate(
     Question: {question}
     """
 )
-
 #print(chat_model.predict(prompt.format(question="How do you respond to a group of kids who want your autograph?")))
+
+# Initializing Memory for Conversation
+memory_prompt = PromptTemplate(
+    input_variables=["prior_pdf", "pdf"],
+    template="""
+    {prior_pdf}
+
+    PDF: {pdf}
+    """
+)
+
+memory = ConversationBufferMemory(memory_key="prior_pdf")
+
+# Format LLMChain
+
+llm_chain_pdf = LLMChain(
+    llm=chat_model,
+    prompt=memory_prompt,
+    verbose=True,
+    memory=memory,
+)
+
+### This is the format for entering each of the documents within the PDF loader. 
+#llm_chain.predict(pdf=document[x])
 
 # Initialize Pre-Prompt
 
